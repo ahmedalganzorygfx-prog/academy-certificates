@@ -54,6 +54,14 @@ st.markdown(
         color: #ffcc00 !important;
         font-weight: bold;
     }
+    /* تنسيق مميز بخط أكبر ولون لافت لتعليمات الاستلام */
+    .pickup-instructions {
+        font-size: 17px !important;
+        color: #ffe566 !important;
+        font-weight: bold;
+        margin-top: 8px;
+        display: block;
+    }
     .stAlert {
         direction: rtl;
         text-align: right;
@@ -330,7 +338,7 @@ if df is not None:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span class="pickup-instructions">📌 يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
