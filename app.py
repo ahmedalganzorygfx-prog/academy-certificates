@@ -10,47 +10,76 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* تغيير خلفية التطبيق بالكامل لتصبح داكنة */
+    .stApp {
+        background-color: #0e1117;
+        color: #e0e0e0;
+    }
     html, body, [class*="css"] {
         direction: rtl;
         text-align: right;
         font-family: 'Cairo', sans-serif, Arial;
+        color: #e0e0e0;
     }
+    /* تصميم رأس الصفحة بلون كحلي داكن فاخر */
     .header-box {
-        background-color: #1b5e20;
-        padding: 20px;
-        border-radius: 10px;
+        background-color: #161b22;
+        border: 1px solid #30363d;
+        padding: 25px;
+        border-radius: 12px;
         color: white;
         text-align: center;
         margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .header-box h2 {
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .header-box h4 {
+        color: #8b949e;
     }
     .stAlert {
         direction: rtl;
         text-align: right;
     }
+    /* زر البحث */
     .stFormSubmitButton > button {
-        background-color: #1b5e20;
+        background-color: #21262d;
         color: white;
         width: 100%;
-        border-radius: 5px;
+        border-radius: 6px;
+        border: 1px solid #30363d;
         font-weight: bold;
     }
-    /* تصميم بطاقة بيانات المعلم ومحاذاتها لليمين */
+    .stFormSubmitButton > button:hover {
+        background-color: #30363d;
+        border-color: #8b949e;
+    }
+    /* تصميم خانة الإدخال لتتناغم مع التصميم الداكن */
+    .stTextInput input {
+        background-color: #161b22 !important;
+        color: white !important;
+        border: 1px solid #30363d !important;
+        border-radius: 6px !important;
+    }
+    /* تصميم بطاقة بيانات المعلم الداكنة */
     .teacher-card {
-        background-color: #f9f9f9;
-        border: 2px solid #1b5e20;
-        padding: 20px;
-        border-radius: 10px;
+        background-color: #161b22;
+        border: 1px solid #30363d;
+        padding: 22px;
+        border-radius: 12px;
         margin-bottom: 20px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.4);
         text-align: right;
         direction: rtl;
     }
     .card-title {
-        color: #1b5e20;
+        color: #58a6ff;
         font-size: 20px;
         font-weight: bold;
         margin-bottom: 15px;
-        border-bottom: 2px solid #ddd;
+        border-bottom: 1px solid #30363d;
         padding-bottom: 8px;
         text-align: right;
         direction: rtl;
@@ -58,46 +87,55 @@ st.markdown(
     .card-row {
         font-size: 16px;
         margin-bottom: 10px;
-        color: #333;
+        color: #c9d1d9;
         text-align: right;
         direction: rtl;
     }
-    /* تنسيق صناديق الحالات المخصصة (في المنتصف) */
+    /* تنسيق صناديق الحالات المخصصة المتناسقة مع الخلفية الداكنة */
     .status-red {
-        background-color: #ffebee;
-        color: #c62828;
-        padding: 12px;
-        border-radius: 6px;
-        border-right: 5px solid #c62828;
+        background-color: rgba(248, 81, 73, 0.15);
+        color: #ff7b72;
+        padding: 14px;
+        border-radius: 8px;
+        border-right: 5px solid #f85149;
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
         direction: rtl;
+        border-top: 1px solid rgba(248, 81, 73, 0.2);
+        border-bottom: 1px solid rgba(248, 81, 73, 0.2);
+        border-left: 1px solid rgba(248, 81, 73, 0.2);
     }
     .status-green {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-        padding: 12px;
-        border-radius: 6px;
-        border-right: 5px solid #2e7d32;
+        background-color: rgba(46, 160, 67, 0.15);
+        color: #3fb950;
+        padding: 14px;
+        border-radius: 8px;
+        border-right: 5px solid #2ea043;
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
         direction: rtl;
+        border-top: 1px solid rgba(46, 160, 67, 0.2);
+        border-bottom: 1px solid rgba(46, 160, 67, 0.2);
+        border-left: 1px solid rgba(46, 160, 67, 0.2);
     }
     .status-blue {
-        background-color: #e3f2fd;
-        color: #1565c0;
-        padding: 12px;
-        border-radius: 6px;
-        border-right: 5px solid #1565c0;
+        background-color: rgba(56, 139, 253, 0.15);
+        color: #58a6ff;
+        padding: 14px;
+        border-radius: 8px;
+        border-right: 5px solid #388bfd;
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
         text-align: center;
         direction: rtl;
+        border-top: 1px solid rgba(56, 139, 253, 0.2);
+        border-bottom: 1px solid rgba(56, 139, 253, 0.2);
+        border-left: 1px solid rgba(56, 139, 253, 0.2);
     }
     </style>
 """,
@@ -112,7 +150,6 @@ with col1:
     if os.path.exists(logo_path):
         st.image(logo_path, width=120)
     else:
-        # البحث عن أي ملف صورة آخر شبيه في حال كان الاسم مختلفاً قليلاً
         found = False
         for file in os.listdir("."):
             if file.lower().startswith("logo") and file.lower().endswith(
@@ -122,7 +159,6 @@ with col1:
                 found = True
                 break
         if not found:
-            # عرض أيقونة افتراضية هادئة إذا لم يوجد الشعار نهائياً لكي لا يظهر خطأ
             st.image(
                 "https://cdn-icons-png.flaticon.com/512/3135/3135755.png",
                 width=100,
@@ -132,7 +168,7 @@ with col2:
     st.markdown(
         """
         <div class="header-box">
-            <h2>الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
+            <h2>🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
             <h4>الاستعلام عن تجديد الشهادة</h4>
         </div>
         """,
@@ -169,7 +205,7 @@ try:
 
     # النص الإرشادي موجه ناحية اليمين
     st.markdown(
-        '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
+        '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #c9d1d9;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
         unsafe_allow_html=True,
     )
 
@@ -185,7 +221,7 @@ try:
             result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
-                st.success("🎉 تم العثور على بيانات المعلم بنجاح:")
+                st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
@@ -248,7 +284,7 @@ try:
                                 """
                                 <div class="status-red">
                                     🔴 لم تصل إلى الفرع حتى الآن<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى الاستعلام في وقت لاحق.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
@@ -258,7 +294,7 @@ try:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
