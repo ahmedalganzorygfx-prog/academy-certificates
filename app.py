@@ -4,9 +4,12 @@ import streamlit as st
 
 # إعداد الصفحة لتكون عريضة ودعم اللغة العربية من اليمين لليسار (RTL)
 st.set_page_config(
-    page_title="الاستعلام عن تجديد الشهادة - فرع الجيزة", layout="wide"
+    page_title="الاستعلام عن تجديد الشهادة - فرع الجيزة",
+    layout="wide",
+    page_icon="🏛️",
 )
 
+# تطبيق التنسيق عبر CSS
 st.markdown(
     """
     <style>
@@ -63,7 +66,7 @@ st.markdown(
         background-color: #30363d;
         border-color: #8b949e;
     }
-    /* جعل تسمية خانة الإدخال (الرقم القومي) باللون الأبيض */
+    /* جعل تسمية خانة الإدخال باللون الأبيض */
     .stTextInput label {
         color: #ffffff !important;
         font-weight: bold !important;
@@ -103,7 +106,7 @@ st.markdown(
         text-align: right;
         direction: rtl;
     }
-    /* تنسيق صناديق الحالات المخصصة المتناسقة مع الخلفية الداكنة */
+    /* تنسيق صناديق الحالات المخصصة */
     .status-red {
         background-color: rgba(248, 81, 73, 0.15);
         color: #ff7b72;
@@ -191,7 +194,7 @@ st.markdown(
     <div class="header-box">
         <h2>🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
         <h4>الاستعلام عن تجديد شهادة القيادة والإشراف</h4>
-        <p><b>البرامج التدريبية :</b> مدير ووكيل إدارة تعليمية &nbsp;|&nbsp; مدير ووكيل إدارة مدرسية &nbsp;|&nbsp; أساسيات التوجيه الفني</p>
+        <p><b>البرامج التدريبية المشمولة:</b> مدير ووكيل إدارة تعليمية &nbsp;|&nbsp; مدير ووكيل إدارة مدرسية &nbsp;|&nbsp; أساسيات التوجيه الفني</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -199,93 +202,101 @@ st.markdown(
 
 st.markdown("---")
 
-# قراءة ملف الإكسيل الثابت تلقائياً من المجلد
-excel_file = "certificates.xlsx"
 
-try:
-    df = pd.read_excel(excel_file)
-
-    # تنظيف أسماء الأعمدة لإزالة المسافات الزائدة
+# دالة قراءة البيانات وتسريعها عبر الذاكرة المخبأة (Caching)
+@st.cache_data(ttl=600)  # يتم تحديث الكاش كل 10 دقائق تلقائياً
+def load_data(file_path):
+    if not os.path.exists(file_path):
+        return None
+    # قراءة كافة الأعمدة كنصوص لمنع تحويل الأرقام القومية لأرقام عشرية
+    df = pd.read_excel(file_path, dtype=str)
     df.columns = df.columns.astype(str).str.strip()
+    return df
 
-    # البحث عن عمود الرقم القومي تلقائياً
+
+excel_file = "certificates.xlsx"
+df = load_data(excel_file)
+
+if df is not None:
+    # 1. تحديد عمود الرقم القومي
     id_column = None
     for col in df.columns:
-        if "قومي" in col or "الرقم" in col or "ID" in col:
+        if any(keyword in col for keyword in ["قومي", "الرقم", "ID"]):
             id_column = col
             break
-
     if id_column is None:
         id_column = df.columns[0]
 
-    # البحث عن عمود حالة الشهادة تلقائياً
+    # 2. تحديد عمود حالة الشهادة
     status_column = None
     for col in df.columns:
-        if "حالة" in col or "الشهادة" in col:
+        if any(keyword in col for keyword in ["حالة", "الشهادة"]):
             status_column = col
             break
 
-    # النص الإرشادي موجه ناحية اليمين
+    # النص الإرشادي
     st.markdown(
         '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #c9d1d9;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
         unsafe_allow_html=True,
     )
 
-    # تصميم نموذج البحث (Form)
+    # نموذج البحث
     with st.form(key="search_form"):
-        search_query = st.text_input("الرقم القومي:", max_chars=14)
+        search_query = st.text_input("الرقم القومي:", max_chars=14).strip()
         submit_button = st.form_submit_button(label="🔍 بحث")
 
-    # تنفيذ البحث عند الضغط على زر بحث
     if submit_button:
-        if search_query.strip():
-            df[id_column] = df[id_column].astype(str).str.strip()
-            result = df[df[id_column].str.contains(search_query, na=False)]
+        if search_query:
+            # تنظيف عمود الرقم القومي والبحث فيه
+            df[id_column] = (
+                df[id_column]
+                .astype(str)
+                .str.replace(r"\.0$", "", regex=True)
+                .str.strip()
+            )
+            result = df[df[id_column] == search_query]
+
+            # في حال لم يجد بـ (==) يمكن التجريد بالـ contains للبحث الجزئي
+            if result.empty:
+                result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
-                # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
-                    # البحث الذكي والشامل عن اسم المعلم
+                    # البحث الذكي عن اسم المعلم
                     name_val = "غير متوفر"
                     for c in df.columns:
-                        if (
-                            "اسم" in c
-                            or "الاسم" in c
-                            or "المعلم" in c
-                            or "السيد" in c
+                        if any(
+                            k in c for k in ["اسم", "الاسم", "المعلم", "السيد"]
+                        ) and not any(
+                            k in c for k in ["قومي", "إدارة", "الادارة"]
                         ):
-                            if (
-                                "قومي" not in c
-                                and "إدارة" not in c
-                                and "الادارة" not in c
-                            ):
-                                name_val = str(row[c])
-                                break
+                            name_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
+                            break
 
                     # البحث الذكي عن الإدارة
                     admin_val = "غير متوفر"
                     for c in df.columns:
                         if "الادارة" in c or "الإدارة" in c:
-                            admin_val = str(row[c])
+                            admin_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
                     # البحث الذكي عن البرنامج التدريبي
                     prog_val = "غير متوفر"
                     for c in df.columns:
-                        if "البرنامج" in c or "الترقي" in c or "التدريب" in c:
-                            prog_val = str(row[c])
+                        if any(k in c for k in ["البرنامج", "الترقي", "التدريب"]):
+                            prog_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
                     # البحث الذكي عن رقم المسلسل
                     serial_val = "غير متوفر"
                     for c in df.columns:
-                        if "مسلسل" in c or "م" == c.strip():
-                            serial_val = str(row[c])
+                        if "مسلسل" in c or c.strip() == "م":
+                            serial_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
-                    # رسم البطاقة الأساسية مع محاذاة لليمين
+                    # عرض بطاقة البيانات
                     card_code = f"""
                     <div class="teacher-card">
                         <div class="card-title">👤 بيانات المعلم</div>
@@ -298,8 +309,8 @@ try:
                     """
                     st.markdown(card_code, unsafe_allow_html=True)
 
-                    # عرض صندوق الحالة في المنتصف
-                    if status_column:
+                    # عرض حالة الشهادة
+                    if status_column and pd.notna(row[status_column]):
                         status_val = str(row[status_column]).strip()
                         if "لم تصل" in status_val:
                             st.markdown(
@@ -316,7 +327,7 @@ try:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها مع احضار صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
@@ -335,15 +346,13 @@ try:
                                 f'<div class="status-blue">حالة الشهادة: {status_val}</div>',
                                 unsafe_allow_html=True,
                             )
-
             else:
                 st.error(
                     "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
                 )
         else:
             st.warning("⚠️ برجاء كتابة الرقم القومي أولاً قبل الضغط على بحث.")
-
-except Exception as e:
+else:
     st.warning(
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
