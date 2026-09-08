@@ -33,7 +33,6 @@ st.markdown(
         direction: rtl;
         text-align: right;
     }
-    /* تنسيق زر البحث ليكون بلون مناسب ومتناسق */
     .stFormSubmitButton > button {
         background-color: #1b5e20;
         color: white;
@@ -89,13 +88,13 @@ try:
     if id_column is None:
         id_column = df.columns[0]
 
-    # النص الإرشادي موجه تماماً ناحية اليمين
+    # النص الإرشادي موجه ناحية اليمين
     st.markdown(
         '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
         unsafe_allow_html=True,
     )
 
-    # تصميم نموذج البحث (Form) الذي يضم خانة الإدخال وزر البحث
+    # تصميم نموذج البحث (Form)
     with st.form(key="search_form"):
         search_query = st.text_input("الرقم القومي:", max_chars=14)
         submit_button = st.form_submit_button(label="🔍 بحث")
@@ -103,13 +102,32 @@ try:
     # تنفيذ البحث عند الضغط على زر بحث
     if submit_button:
         if search_query.strip():
-            # تحويل القيم إلى نص للبحث السليم
             df[id_column] = df[id_column].astype(str).str.strip()
             result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
-                st.dataframe(result, use_container_width=True)
+
+                # ترتيب الأعمدة الأساسية لتكون في المقدمة من اليمين لليسار إذا كانت موجودة في الملف
+                cols = list(result.columns)
+                priority_cols = []
+
+                # البحث عن الأعمدة بالأسماء الشبيهة
+                for p in ["مسلسل", "الاسم", "الادارة", "القومي"]:
+                    for c in cols:
+                        if p in c and c not in priority_cols:
+                            priority_cols.append(c)
+
+                # إضافة باقي الأعمدة إن وجدت
+                remaining_cols = [c for c in cols if c not in priority_cols]
+                final_order = priority_cols + remaining_cols
+
+                # عرض الجدول بالترتيب الجديد
+                st.dataframe(
+                    result[final_order],
+                    use_container_width=True,
+                    hide_index=True,
+                )
             else:
                 st.error(
                     "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
