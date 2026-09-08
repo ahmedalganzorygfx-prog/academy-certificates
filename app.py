@@ -89,8 +89,10 @@ try:
     if id_column is None:
         id_column = df.columns[0]
 
+    # النص الإرشادي موجه تماماً ناحية اليمين
     st.markdown(
-        "💡 **أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:**"
+        '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
+        unsafe_allow_html=True,
     )
 
     # تصميم نموذج البحث (Form) الذي يضم خانة الإدخال وزر البحث
