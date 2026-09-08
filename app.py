@@ -227,7 +227,7 @@ st.markdown("---")
 
 
 # دالة قراءة البيانات وتسريعها عبر الذاكرة المخبأة (Caching)
-@st.cache_data(ttl=600)  # يتم تحديث الكاش كل 10 دقائق تلقائياً
+@st.cache_data(ttl=600)
 def load_data(file_path):
     if not os.path.exists(file_path):
         return None
@@ -240,7 +240,6 @@ excel_file = "certificates.xlsx"
 df = load_data(excel_file)
 
 if df is not None:
-    # 1. تحديد عمود الرقم القومي
     id_column = None
     for col in df.columns:
         if any(keyword in col for keyword in ["قومي", "الرقم", "ID"]):
@@ -249,27 +248,23 @@ if df is not None:
     if id_column is None:
         id_column = df.columns[0]
 
-    # 2. تحديد عمود حالة الشهادة
     status_column = None
     for col in df.columns:
         if any(keyword in col for keyword in ["حالة", "الشهادة"]):
             status_column = col
             break
 
-    # النص الإرشادي
     st.markdown(
         '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #c9d1d9;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
         unsafe_allow_html=True,
     )
 
-    # نموذج البحث
     with st.form(key="search_form"):
         search_query = st.text_input("الرقم القومي:", max_chars=14).strip()
         submit_button = st.form_submit_button(label="🔍 بحث")
 
     if submit_button:
         if search_query:
-            # تنظيف عمود الرقم القومي والبحث فيه
             df[id_column] = (
                 df[id_column]
                 .astype(str)
@@ -285,7 +280,6 @@ if df is not None:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
                 for idx, row in result.iterrows():
-                    # البحث الذكي عن اسم المعلم
                     name_val = "غير متوفر"
                     for c in df.columns:
                         if any(
@@ -296,28 +290,24 @@ if df is not None:
                             name_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
-                    # البحث الذكي عن الإدارة
                     admin_val = "غير متوفر"
                     for c in df.columns:
                         if "الادارة" in c or "الإدارة" in c:
                             admin_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
-                    # البحث الذكي عن البرنامج التدريبي
                     prog_val = "غير متوفر"
                     for c in df.columns:
                         if any(k in c for k in ["البرنامج", "الترقي", "التدريب"]):
                             prog_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
-                    # البحث الذكي عن رقم المسلسل
                     serial_val = "غير متوفر"
                     for c in df.columns:
-                        if "مسلسل" in c or c.strip() == "m":
+                        if "مسلسل" in c or c.strip() == "م":
                             serial_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
-                    # عرض بطاقة البيانات
                     card_code = f"""
                     <div class="teacher-card">
                         <div class="card-title">👤 بيانات المعلم</div>
@@ -330,7 +320,6 @@ if df is not None:
                     """
                     st.markdown(card_code, unsafe_allow_html=True)
 
-                    # عرض حالة الشهادة
                     if status_column and pd.notna(row[status_column]):
                         status_val = str(row[status_column]).strip()
                         if "لم تصل" in status_val:
@@ -378,12 +367,12 @@ else:
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
 
-# تذييل الصفحة (Footer) مع عنوان ورابط موقع الفرع
+# تذييل الصفحة مع الرابط المباشر للموقع
 st.markdown(
     """
     <div class="footer">
         📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة<br>
-        🗺️ <a href="https://share.google/RUJSeiO0XnMXz7hwY" target="_blank" class="location-link">اضغط هنا للوصول لموقع الفرع على الخريطة (Google Maps)</a><br><br>
+        🗺️ <a href="https://maps.app.goo.gl/akdNyovrEbWLJmBu9" target="_blank" class="location-link">اضغط هنا للوصول لموقع الفرع على الخريطة (Google Maps)</a><br><br>
         تصميم وتنفيذ <b>أحمد الجنزوري</b> - مدير الفرع
     </div>
     """,
