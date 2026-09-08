@@ -33,7 +33,7 @@ st.markdown(
         border-radius: 5px;
         font-weight: bold;
     }
-    /* تصميم بطاقة بيانات المعلم */
+    /* تصميم بطاقة بيانات المعلم ومحاذاتها لليمين */
     .teacher-card {
         background-color: #f9f9f9;
         border: 2px solid #1b5e20;
@@ -41,6 +41,8 @@ st.markdown(
         border-radius: 10px;
         margin-bottom: 20px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: right;
+        direction: rtl;
     }
     .card-title {
         color: #1b5e20;
@@ -49,11 +51,15 @@ st.markdown(
         margin-bottom: 15px;
         border-bottom: 2px solid #ddd;
         padding-bottom: 8px;
+        text-align: right;
+        direction: rtl;
     }
     .card-row {
         font-size: 16px;
         margin-bottom: 10px;
         color: #333;
+        text-align: right;
+        direction: rtl;
     }
     /* تنسيق صناديق الحالات المخصصة */
     .status-red {
@@ -178,7 +184,6 @@ try:
                             or "المعلم" in c
                             or "السيد" in c
                         ):
-                            # نتأكد أنه ليس عمود الرقم أو الإدارة
                             if (
                                 "قومي" not in c
                                 and "إدارة" not in c
@@ -208,7 +213,7 @@ try:
                             serial_val = str(row[c])
                             break
 
-                    # رسم البطاقة الأساسية (بدون كود الحالة)
+                    # رسم البطاقة الأساسية مع محاذاة لليمين
                     card_code = f"""
                     <div class="teacher-card">
                         <div class="card-title">👤 بيانات المعلم</div>
@@ -221,7 +226,7 @@ try:
                     """
                     st.markdown(card_code, unsafe_allow_html=True)
 
-                    # عرض صندوق الحالة بشكل منفصل ومستقل لضمان عمل الـ HTML الخاص به بكفاءة
+                    # عرض صندوق الحالة بشكل منفصل ومستقل ومحاذاة لليمين
                     if status_column:
                         status_val = str(row[status_column]).strip()
                         if "لم تصل" in status_val:
