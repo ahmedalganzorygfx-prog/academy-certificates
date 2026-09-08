@@ -55,7 +55,7 @@ st.markdown(
         margin-bottom: 10px;
         color: #333;
     }
-    /* تنسيق صناديق الحالات المخصصة داخل البطاقة */
+    /* تنسيق صناديق الحالات المخصصة */
     .status-red {
         background-color: #ffebee;
         color: #c62828;
@@ -169,59 +169,46 @@ try:
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
-                    # البحث الذكي عن أسماء الأعمدة بغض النظر عن الصيغة الدقيقة
+                    # البحث الذكي والشامل عن اسم المعلم
                     name_val = "غير متوفر"
                     for c in df.columns:
-                        if "الاسم" in c:
-                            name_val = str(row[c])
-                            break
+                        if (
+                            "اسم" in c
+                            or "الاسم" in c
+                            or "المعلم" in c
+                            or "السيد" in c
+                        ):
+                            # نتأكد أنه ليس عمود الرقم أو الإدارة
+                            if (
+                                "قومي" not in c
+                                and "إدارة" not in c
+                                and "الادارة" not in c
+                            ):
+                                name_val = str(row[c])
+                                break
 
+                    # البحث الذكي عن الإدارة
                     admin_val = "غير متوفر"
                     for c in df.columns:
                         if "الادارة" in c or "الإدارة" in c:
                             admin_val = str(row[c])
                             break
 
+                    # البحث الذكي عن البرنامج التدريبي
                     prog_val = "غير متوفر"
                     for c in df.columns:
-                        if "البرنامج" in c:
+                        if "البرنامج" in c or "الترقي" in c or "التدريب" in c:
                             prog_val = str(row[c])
                             break
 
+                    # البحث الذكي عن رقم المسلسل
                     serial_val = "غير متوفر"
                     for c in df.columns:
-                        if "مسلسل" in c:
+                        if "مسلسل" in c or "م" == c.strip():
                             serial_val = str(row[c])
                             break
 
-                    # تحديد محتوى حالة الشهادة
-                    status_html = ""
-                    if status_column:
-                        status_val = str(row[status_column]).strip()
-                        if "لم تصل" in status_val:
-                            status_html = """
-                            <div class="status-red">
-                                🔴 لم تصل إلى الفرع حتى الآن<br>
-                                <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
-                            </div>
-                            """
-                        elif "موجودة" in status_val:
-                            status_html = """
-                            <div class="status-green">
-                                🟢 موجودة بالفرع<br>
-                                <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
-                            </div>
-                            """
-                        elif "تسليم" in status_val:
-                            status_html = """
-                            <div class="status-blue">
-                                🔵 تم تسليم الشهادة للمعلم
-                            </div>
-                            """
-                        else:
-                            status_html = f'<div class="status-blue">حالة الشهادة: {status_val}</div>'
-
-                    # طباعة البطاقة بالكامل باستخدام st.markdown مع خاصية unsafe_allow_html
+                    # رسم البطاقة الأساسية (بدون كود الحالة)
                     card_code = f"""
                     <div class="teacher-card">
                         <div class="card-title">👤 بيانات المعلم</div>
@@ -230,10 +217,47 @@ try:
                         <div class="card-row"><b>الرقم القومي:</b> {row[id_column]}</div>
                         <div class="card-row"><b>الإدارة التعليمية:</b> {admin_val}</div>
                         <div class="card-row"><b>البرنامج التدريبي:</b> {prog_val}</div>
-                        {status_html}
                     </div>
                     """
                     st.markdown(card_code, unsafe_allow_html=True)
+
+                    # عرض صندوق الحالة بشكل منفصل ومستقل لضمان عمل الـ HTML الخاص به بكفاءة
+                    if status_column:
+                        status_val = str(row[status_column]).strip()
+                        if "لم تصل" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-red">
+                                    🔴 لم تصل إلى الفرع حتى الآن<br>
+                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        elif "موجودة" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-green">
+                                    🟢 موجودة بالفرع<br>
+                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        elif "تسليم" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-blue">
+                                    🔵 تم تسليم الشهادة للمعلم
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        else:
+                            st.markdown(
+                                f'<div class="status-blue">حالة الشهادة: {status_val}</div>',
+                                unsafe_allow_html=True,
+                            )
 
             else:
                 st.error(
