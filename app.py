@@ -167,7 +167,7 @@ st.markdown(
     }
     /* تنسيق تذييل الصفحة (Footer) */
     .footer {
-        margin-top: 50px;
+        margin-top: 40px;
         padding: 20px;
         text-align: center;
         border-top: 1px solid #30363d;
@@ -184,6 +184,14 @@ st.markdown(
     .location-link:hover {
         text-decoration: underline;
         color: #79c0ff !important;
+    }
+    .map-container {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #30363d;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        margin-top: 15px;
+        margin-bottom: 20px;
     }
     </style>
 """,
@@ -367,12 +375,23 @@ else:
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
 
-# تذييل الصفحة مع الرابط المباشر للموقع
+# تذييل الصفحة المحدث بوجود الخريطة التفاعلية المباشرة
 st.markdown(
     """
     <div class="footer">
         📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة<br>
-        🗺️ <a href="https://maps.app.goo.gl/akdNyovrEbWLJmBu9" target="_blank" class="location-link">اضغط هنا للوصول لموقع الفرع على الخريطة (Google Maps)</a><br><br>
+        🗺️ <a href="https://maps.app.goo.gl/akdNyovrEbWLJmBu9" target="_blank" class="location-link">فتح الموقع في تطبيق خرائط Google Maps</a>
+        <div class="map-container">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3455.5147817441306!2d31.2001552!3d29.9933543!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145846062f8cded1%3A0x6bfa332a6730040f!2sProfessional%20Academy%20for%20Teachers%20-%20Giza%20Branch!5e0!3m2!1sen!2seg!4v1710000000000!5m2!1sen!2seg" 
+                width="100%" 
+                height="320" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        </div>
         تصميم وتنفيذ <b>أحمد الجنزوري</b> - مدير الفرع
     </div>
     """,
