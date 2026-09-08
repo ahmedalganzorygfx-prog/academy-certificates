@@ -108,23 +108,21 @@ try:
             if not result.empty:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
-                # ترتيب الأعمدة الأساسية لتكون في المقدمة من اليمين لليسار إذا كانت موجودة في الملف
+                # ترتيب الأعمدة لجعلها تبدأ من اليمين لليسار تماماً
                 cols = list(result.columns)
                 priority_cols = []
 
-                # البحث عن الأعمدة بالأسماء الشبيهة
                 for p in ["مسلسل", "الاسم", "الادارة", "القومي"]:
                     for c in cols:
                         if p in c and c not in priority_cols:
                             priority_cols.append(c)
 
-                # إضافة باقي الأعمدة إن وجدت
                 remaining_cols = [c for c in cols if c not in priority_cols]
                 final_order = priority_cols + remaining_cols
 
-                # عرض الجدول بالترتيب الجديد
+                # عكس ترتيب الأعمدة ([::-1]) لكي تظهر العناصر الأولى أقصى اليمين في الجدول
                 st.dataframe(
-                    result[final_order],
+                    result[final_order[::-1]],
                     use_container_width=True,
                     hide_index=True,
                 )
