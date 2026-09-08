@@ -33,6 +33,14 @@ st.markdown(
         direction: rtl;
         text-align: right;
     }
+    /* تنسيق زر البحث ليكون بلون مناسب ومتناسق */
+    .stFormSubmitButton > button {
+        background-color: #1b5e20;
+        color: white;
+        width: 100%;
+        border-radius: 5px;
+        font-weight: bold;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -62,7 +70,7 @@ with col2:
 
 st.markdown("---")
 
-# قراءة ملف الإكسيل الثابت تلقائياً من المجلد (الملف الذي ترفعيه أنتِ كأدمن)
+# قراءة ملف الإكسيل الثابت تلقائياً من المجلد
 excel_file = "certificates.xlsx"
 
 try:
@@ -81,26 +89,33 @@ try:
     if id_column is None:
         id_column = df.columns[0]
 
-    # صندوق إدخال الرقم القومي للمعلم
-    st.info(
-        "💡 أدخل الرقم القومي الخاص بك (14 رقماً) للاستعلام عن موقف تجديد الشهادة."
+    st.markdown(
+        "💡 **أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:**"
     )
-    search_query = st.text_input("الرقم القومي:", max_chars=14)
 
-    if search_query:
-        # تحويل القيم إلى نص للبحث السليم
-        df[id_column] = df[id_column].astype(str).str.strip()
-        result = df[df[id_column].str.contains(search_query, na=False)]
+    # تصميم نموذج البحث (Form) الذي يضم خانة الإدخال وزر البحث
+    with st.form(key="search_form"):
+        search_query = st.text_input("الرقم القومي:", max_chars=14)
+        submit_button = st.form_submit_button(label="🔍 بحث")
 
-        if not result.empty:
-            st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
-            st.dataframe(result, use_container_width=True)
+    # تنفيذ البحث عند الضغط على زر بحث
+    if submit_button:
+        if search_query.strip():
+            # تحويل القيم إلى نص للبحث السليم
+            df[id_column] = df[id_column].astype(str).str.strip()
+            result = df[df[id_column].str.contains(search_query, na=False)]
+
+            if not result.empty:
+                st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
+                st.dataframe(result, use_container_width=True)
+            else:
+                st.error(
+                    "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
+                )
         else:
-            st.error(
-                "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
-            )
+            st.warning("⚠️ برجاء كتابة الرقم القومي أولاً قبل الضغط على بحث.")
 
 except Exception as e:
     st.warning(
-        "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع."
+        "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
