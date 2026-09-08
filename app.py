@@ -1,183 +1,125 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
+# إعداد الصفحة لتكون عريضة
 st.set_page_config(
-    page_title="الأكاديمية المهنية للمعلمين - الاستعلام عن تجديد الشهادة",
-    page_icon="🎓",
-    layout="centered"
+    page_title="الاستعلام عن تجديد الشهادة - فرع الجيزة", layout="wide"
 )
 
-# Custom Styling for Arabic RTL layout and professional government style
-st.markdown("""
+# تخصيص التصميم ودعم اللغة العربية من اليمين لليسار (RTL)
+st.markdown(
+    """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-    
+    /* توجيه كافة العناصر من اليمين لليسار */
     html, body, [class*="css"] {
-        font-family: 'Cairo', sans-serif;
+        direction: rtl;
+        text-align: right;
+        font-family: 'Cairo', sans-serif, Arial;
+    }
+    
+    /* تنسيق صندوق العنوان الرئيسي */
+    .header-box {
+        background-color: #1b5e20;
+        padding: 20px;
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    /* تنسيق الجداول والبيانات لتكون من اليمين لليسار */
+    table {
+        direction: rtl;
+        text-align: right !important;
+    }
+    th, td {
+        text-align: right !important;
+    }
+    
+    /* تنسيق صناديق النجاح والتحذير */
+    .stAlert {
         direction: rtl;
         text-align: right;
     }
-    .main-header {
-        background: linear-gradient(135deg, #1b4d3e 0%, #2c7a51 100%);
-        color: white;
-        padding: 25px;
-        border-radius: 12px;
-        text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .result-card {
-        background-color: #f8f9fa;
-        border: 2px solid #2c7a51;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    .result-row {
-        font-size: 18px;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px dashed #dee2e6;
-    }
-    .status-msg-1 {
-        background-color: #fff3cd;
-        color: #856404;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #ffeeba;
-        font-weight: bold;
-        text-align: center;
-        font-size: 18px;
-        margin-top: 15px;
-    }
-    .status-msg-2 {
-        background-color: #d4edda;
-        color: #155724;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #c3e6cb;
-        font-weight: bold;
-        text-align: center;
-        font-size: 18px;
-        margin-top: 15px;
-    }
-    .status-msg-3 {
-        background-color: #cce5ff;
-        color: #004085;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #b8daff;
-        font-weight: bold;
-        text-align: center;
-        font-size: 18px;
-        margin-top: 15px;
-    }
-    .error-card {
-        background-color: #f8d7da;
-        color: #721c24;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid #f5c6cb;
-        text-align: center;
-        font-weight: bold;
-        font-size: 18px;
-        margin-top: 20px;
-    }
     </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-st.markdown("""
-    <div class="main-header">
-        <h2 style="margin: 0; font-size: 26px;">الأكاديمية المهنية للمعلمين</h2>
-        <p style="margin: 5px 0 0 0; font-size: 20px;">الاستعلام عن تجديد الشهادة</p>
-    </div>
-""", unsafe_allow_html=True)
+# رأس الصفحة (يمكنك وضع رابط اللوجو الخاص بك مكان رابط الصورة أدناه)
+col1, col2 = st.columns([1, 4])
 
-# File uploader for the Excel sheet
-uploaded_file = st.file_uploader("📂 برجاء رفع ملف كشف الشهادات (Excel)", type=["xlsx", "xls"])
+with col1:
+    # ضع رابط الشعار (Logo) الخاص بالفرع هنا، أو اترك مسار الصورة المحلية
+    # مثال لرابط شعار افتراضي أو يمكنك رفع الشعار بجانب الكود وتسميته logo.png
+    try:
+        st.image("logo.png", width=120)
+    except:
+        st.image(
+            "https://cdn-icons-png.flaticon.com/512/3135/3135755.png", width=100
+        )
+
+with col2:
+    st.markdown(
+        """
+        <div class="header-box">
+            <h2>الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
+            <h4>الاستعلام عن تجديد الشهادة</h4>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("---")
+
+# رفع ملف إكسيل الشهادات
+uploaded_file = st.file_uploader(
+    "📁 برجاء رفع ملف كشف الشهادات (Excel)", type=["xlsx", "xls"]
+)
 
 if uploaded_file is not None:
     try:
         df = pd.read_excel(uploaded_file)
-        
-        # Clean column names
-        df.columns = [str(c).strip() for c in df.columns]
-        
-        # Ensure الرقم القومي is string
-        if 'الرقم القومي' in df.columns:
-            df['الرقم القومي'] = df['الرقم القومي'].astype(str).str.replace('.0', '', regex=False).str.strip()
-        
-        st.markdown("### 🔍 أدخل الرقم القومي للاستعلام:")
-        national_id = st.text_input("الرقم القومي", max_chars=14, placeholder="أدخل الرقم القومي (14 رقماً)...")
-        
-        if st.button("استعلام", type="primary", use_container_width=True):
-            if not national_id or len(national_id.strip()) != 14:
-                st.warning("⚠️ برجاء إدخال رقم قومي صحيح مكون من 14 رقماً.")
+
+        # تنظيف أسماء الأعمدة لإزالة المسافات الزائدة
+        df.columns = df.columns.astype(str).str.strip()
+
+        # البحث عن عمود الرقم القومي تلقائياً
+        id_column = None
+        for col in df.columns:
+            if "قومي" in col or "الرقم" in col or "ID" in col:
+                id_column = col
+                break
+
+        if id_column is None:
+            id_column = df.columns[
+                0
+            ]  # افتراض أن العمود الأول هو الرقم القومي إذا لم يتم العثور عليه
+
+        st.success("تم رفع الملف بنجاح! يمكنك الآن الاستعلام.")
+
+        # صندوق إدخال الرقم القومي
+        search_query = st.text_input(
+            "أدخل الرقم القومي (14 رقماً):", max_chars=14
+        )
+
+        if search_query:
+            # تحويل القيم إلى نص للبحث السليم
+            df[id_column] = df[id_column].astype(str).str.strip()
+            result = df[df[id_column].str.contains(search_query, na=False)]
+
+            if not result.empty:
+                st.success("🎉 تم العثور على البيانات بنجاح:")
+                # عرض النتائج في جدول منسق ومن اليمين لليسار
+                st.dataframe(result, use_container_width=True)
             else:
-                result = df[df['الرقم القومي'] == national_id.strip()]
-                
-                if result.empty:
-                    st.markdown("""
-                        <div class="error-card">
-                            ❌ عذراً، الرقم القومي غير مسجل في الكشف.
-                        </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    for idx, row in result.iterrows():
-                        serial_no = row.get('مسلسل', 'غير متوفر')
-                        teacher_name = row.get('اسم المعلم', 'غير متوفر')
-                        admin_office = row.get('الإدارة', 'غير متوفر')
-                        nat_id = row.get('الرقم القومي', 'غير متوفر')
-                        program_name = row.get('اسم البرنامج', 'غير متوفر')
-                        reg_date = row.get('تاريخ التسجيل', 'غير متوفر')
-                        
-                        raw_status = str(row.get('حالة الشهادة', '')).strip()
-                        
-                        # Display requested details including serial number
-                        st.markdown(f"""
-                            <div class="result-card">
-                                <div class="result-row"><strong>🔢 رقم المسلسل:</strong> {serial_no}</div>
-                                <div class="result-row"><strong>👤 اسم المعلم:</strong> {teacher_name}</div>
-                                <div class="result-row"><strong>🏢 الإدارة:</strong> {admin_office}</div>
-                                <div class="result-row"><strong>🆔 الرقم القومي:</strong> {nat_id}</div>
-                                <div class="result-row"><strong>📚 اسم البرنامج:</strong> {program_name}</div>
-                                <div class="result-row" style="border-bottom: none;"><strong>📅 تاريخ التسجيل:</strong> {reg_date}</div>
-                            </div>
-                        """, unsafe_allow_html=True)
-                        
-                        # Determine message based on status rules
-                        if raw_status in ['لم تصل', 'لم تصل إلى الفرع حتى الآن', ''] or pd.isna(row.get('حالة الشهادة')):
-                            st.markdown("""
-                                <div class="status-msg-1">
-                                    ⏳ الحالة: لم تصل إلى الفرع حتى الآن<br>
-                                    <span style="font-size: 16px; font-weight: normal;">يرجى الاستعلام في وقت لاحق</span>
-                                </div>
-                            """, unsafe_allow_html=True)
-                        elif raw_status in ['موجودة', 'موجودة بالفرع']:
-                            st.markdown("""
-                                <div class="status-msg-2">
-                                    ✅ الحالة: موجودة بالفرع<br>
-                                    <span style="font-size: 16px; font-weight: normal; display: block; margin-top: 8px;">
-                                    يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة
-                                    </span>
-                                </div>
-                            """, unsafe_allow_html=True)
-                        elif raw_status in ['تم التسليم', 'تم تسليم الشهادة للمعلم']:
-                            st.markdown("""
-                                <div class="status-msg-3">
-                                    🎉 الحالة: تم تسليم الشهادة للمعلم<br>
-                                    <span style="font-size: 16px; font-weight: normal; display: block; margin-top: 8px;">تم التسليم للمعلم</span>
-                                </div>
-                            """, unsafe_allow_html=True)
-                        else:
-                            st.markdown(f"""
-                                <div class="status-msg-2">
-                                    📌 الحالة: {raw_status}
-                                </div>
-                            """, unsafe_allow_html=True)
-                            
+                st.error(
+                    "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
+                )
+
     except Exception as e:
         st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
 else:
-    st.info("💡 برجاء رفع ملف الـ Excel لبدء العمل.")
+    st.info(
+        "💡 برجاء رفع ملف الإكسيل الخاص بالشهادات لتبدأ عملية الاستعلام للأعضاء."
+    )
