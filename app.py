@@ -65,6 +65,8 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
+        text-align: right;
+        direction: rtl;
     }
     .status-green {
         background-color: #e8f5e9;
@@ -75,6 +77,8 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
+        text-align: right;
+        direction: rtl;
     }
     .status-blue {
         background-color: #e3f2fd;
@@ -85,6 +89,8 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
+        text-align: right;
+        direction: rtl;
     }
     </style>
 """,
@@ -163,7 +169,7 @@ try:
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
-                    # استخراج بيانات المعلم الأساسية مع تفادي الأخطاء إذا وُجدت الأعمدة أو لم توجد
+                    # البحث الذكي عن أسماء الأعمدة بغض النظر عن الصيغة الدقيقة
                     name_val = "غير متوفر"
                     for c in df.columns:
                         if "الاسم" in c:
@@ -176,23 +182,19 @@ try:
                             admin_val = str(row[c])
                             break
 
-                    prog_val = ""
+                    prog_val = "غير متوفر"
                     for c in df.columns:
                         if "البرنامج" in c:
-                            prog_val = (
-                                f'<div class="card-row"><b>البرنامج التدريبي:</b> {row[c]}</div>'
-                            )
+                            prog_val = str(row[c])
                             break
 
-                    serial_val = ""
+                    serial_val = "غير متوفر"
                     for c in df.columns:
                         if "مسلسل" in c:
-                            serial_val = (
-                                f'<div class="card-row"><b>رقم المسلسل:</b> {row[c]}</div>'
-                            )
+                            serial_val = str(row[c])
                             break
 
-                    # تحديد حالة الشهادة والرسالة الخاصة بها
+                    # تحديد محتوى حالة الشهادة
                     status_html = ""
                     if status_column:
                         status_val = str(row[status_column]).strip()
@@ -219,15 +221,15 @@ try:
                         else:
                             status_html = f'<div class="status-blue">حالة الشهادة: {status_val}</div>'
 
-                    # طباعة البطاقة بتصميم HTML مخصص
+                    # طباعة البطاقة بالكامل باستخدام st.markdown مع خاصية unsafe_allow_html
                     card_code = f"""
                     <div class="teacher-card">
                         <div class="card-title">👤 بيانات المعلم</div>
-                        {serial_val}
+                        <div class="card-row"><b>رقم المسلسل:</b> {serial_val}</div>
                         <div class="card-row"><b>اسم المعلم:</b> {name_val}</div>
                         <div class="card-row"><b>الرقم القومي:</b> {row[id_column]}</div>
                         <div class="card-row"><b>الإدارة التعليمية:</b> {admin_val}</div>
-                        {prog_val}
+                        <div class="card-row"><b>البرنامج التدريبي:</b> {prog_val}</div>
                         {status_html}
                     </div>
                     """
