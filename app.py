@@ -22,13 +22,6 @@ st.markdown(
         text-align: center;
         margin-bottom: 25px;
     }
-    table {
-        direction: rtl;
-        text-align: right !important;
-    }
-    th, td {
-        text-align: right !important;
-    }
     .stAlert {
         direction: rtl;
         text-align: right;
@@ -40,34 +33,56 @@ st.markdown(
         border-radius: 5px;
         font-weight: bold;
     }
-    /* تنسيق صناديق الحالات المخصصة */
+    /* تصميم بطاقة بيانات المعلم */
+    .teacher-card {
+        background-color: #f9f9f9;
+        border: 2px solid #1b5e20;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .card-title {
+        color: #1b5e20;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 8px;
+    }
+    .card-row {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    /* تنسيق صناديق الحالات المخصصة داخل البطاقة */
     .status-red {
         background-color: #ffebee;
         color: #c62828;
-        padding: 15px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 6px;
         border-right: 5px solid #c62828;
-        margin-bottom: 15px;
+        margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
     }
     .status-green {
         background-color: #e8f5e9;
         color: #2e7d32;
-        padding: 15px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 6px;
         border-right: 5px solid #2e7d32;
-        margin-bottom: 15px;
+        margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
     }
     .status-blue {
         background-color: #e3f2fd;
         color: #1565c0;
-        padding: 15px;
-        border-radius: 8px;
+        padding: 12px;
+        border-radius: 6px;
         border-right: 5px solid #1565c0;
-        margin-bottom: 15px;
+        margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
     }
@@ -146,58 +161,78 @@ try:
             if not result.empty:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
-                # عرض الرسالة المطابقة للحالة الواردة في الإكسيل
-                if status_column:
-                    for idx, row in result.iterrows():
+                # عرض النتائج في شكل بطاقات أنيقة
+                for idx, row in result.iterrows():
+                    # استخراج بيانات المعلم الأساسية مع تفادي الأخطاء إذا وُجدت الأعمدة أو لم توجد
+                    name_val = "غير متوفر"
+                    for c in df.columns:
+                        if "الاسم" in c:
+                            name_val = str(row[c])
+                            break
+
+                    admin_val = "غير متوفر"
+                    for c in df.columns:
+                        if "الادارة" in c or "الإدارة" in c:
+                            admin_val = str(row[c])
+                            break
+
+                    prog_val = ""
+                    for c in df.columns:
+                        if "البرنامج" in c:
+                            prog_val = (
+                                f'<div class="card-row"><b>البرنامج التدريبي:</b> {row[c]}</div>'
+                            )
+                            break
+
+                    serial_val = ""
+                    for c in df.columns:
+                        if "مسلسل" in c:
+                            serial_val = (
+                                f'<div class="card-row"><b>رقم المسلسل:</b> {row[c]}</div>'
+                            )
+                            break
+
+                    # تحديد حالة الشهادة والرسالة الخاصة بها
+                    status_html = ""
+                    if status_column:
                         status_val = str(row[status_column]).strip()
-
                         if "لم تصل" in status_val:
-                            st.markdown(
-                                """
-                                <div class="status-red">
-                                    🔴 لم تصل إلى الفرع حتى الآن<br>
-                                    <span style="font-weight: normal; font-size: 15px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
+                            status_html = """
+                            <div class="status-red">
+                                🔴 لم تصل إلى الفرع حتى الآن<br>
+                                <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                            </div>
+                            """
                         elif "موجودة" in status_val:
-                            st.markdown(
-                                """
-                                <div class="status-green">
-                                    🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 15px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
+                            status_html = """
+                            <div class="status-green">
+                                🟢 موجودة بالفرع<br>
+                                <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                            </div>
+                            """
                         elif "تسليم" in status_val:
-                            st.markdown(
-                                """
-                                <div class="status-blue">
-                                    🔵 تم تسليم الشهادة للمعلم
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
+                            status_html = """
+                            <div class="status-blue">
+                                🔵 تم تسليم الشهادة للمعلم
+                            </div>
+                            """
+                        else:
+                            status_html = f'<div class="status-blue">حالة الشهادة: {status_val}</div>'
 
-                # ترتيب الأعمدة من اليمين لليسار
-                cols = list(result.columns)
-                priority_cols = []
+                    # طباعة البطاقة بتصميم HTML مخصص
+                    card_code = f"""
+                    <div class="teacher-card">
+                        <div class="card-title">👤 بيانات المعلم</div>
+                        {serial_val}
+                        <div class="card-row"><b>اسم المعلم:</b> {name_val}</div>
+                        <div class="card-row"><b>الرقم القومي:</b> {row[id_column]}</div>
+                        <div class="card-row"><b>الإدارة التعليمية:</b> {admin_val}</div>
+                        {prog_val}
+                        {status_html}
+                    </div>
+                    """
+                    st.markdown(card_code, unsafe_allow_html=True)
 
-                for p in ["مسلسل", "الاسم", "الادارة", "القومي"]:
-                    for c in cols:
-                        if p in c and c not in priority_cols:
-                            priority_cols.append(c)
-
-                remaining_cols = [c for c in cols if c not in priority_cols]
-                final_order = priority_cols + remaining_cols
-
-                st.dataframe(
-                    result[final_order[::-1]],
-                    use_container_width=True,
-                    hide_index=True,
-                )
             else:
                 st.error(
                     "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
