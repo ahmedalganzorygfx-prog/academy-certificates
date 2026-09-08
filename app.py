@@ -174,6 +174,16 @@ st.markdown(
         color: #8b949e;
         font-size: 14px;
         direction: rtl;
+        line-height: 1.8;
+    }
+    .location-link {
+        color: #58a6ff !important;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .location-link:hover {
+        text-decoration: underline;
+        color: #79c0ff !important;
     }
     </style>
 """,
@@ -303,7 +313,7 @@ if df is not None:
                     # البحث الذكي عن رقم المسلسل
                     serial_val = "غير متوفر"
                     for c in df.columns:
-                        if "مسلسل" in c or c.strip() == "م":
+                        if "مسلسل" in c or c.strip() == "m":
                             serial_val = str(row[c]) if pd.notna(row[c]) else "غير متوفر"
                             break
 
@@ -338,7 +348,7 @@ if df is not None:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span class="pickup-instructions">📌 يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span class="pickup-instructions">📌 يرجى التوجه لمقر الفرع لاستلامها مع احضار صحيفة أحوال إلكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
@@ -368,10 +378,12 @@ else:
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
 
-# تذييل الصفحة (Footer)
+# تذييل الصفحة (Footer) مع عنوان ورابط موقع الفرع
 st.markdown(
     """
     <div class="footer">
+        📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة<br>
+        🗺️ <a href="https://share.google/RUJSeiO0XnMXz7hwY" target="_blank" class="location-link">اضغط هنا للوصول لموقع الفرع على الخريطة (Google Maps)</a><br><br>
         تصميم وتنفيذ <b>أحمد الجنزوري</b> - مدير الفرع
     </div>
     """,
