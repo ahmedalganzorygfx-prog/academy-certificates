@@ -21,7 +21,7 @@ st.markdown(
         font-family: 'Cairo', sans-serif, Arial;
         color: #e0e0e0;
     }
-    /* تصميم رأس الصفحة بلون كحلي داكن فاخر */
+    /* تصميم رأس الصفحة بلون كحلي داكن فاخر ومتمركز */
     .header-box {
         background-color: #161b22;
         border: 1px solid #30363d;
@@ -35,9 +35,16 @@ st.markdown(
     .header-box h2 {
         color: #ffffff;
         font-weight: bold;
+        margin-bottom: 10px;
     }
     .header-box h4 {
+        color: #58a6ff;
+        margin-bottom: 8px;
+    }
+    .header-box p {
         color: #8b949e;
+        font-size: 14px;
+        margin: 0;
     }
     .stAlert {
         direction: rtl;
@@ -157,38 +164,38 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# رأس الصفحة مع فحص وجود الشعار بدقة
-col1, col2 = st.columns([1, 4])
-
-with col1:
+# وضع الشعار في منتصف الصفحة تماماً من الأعلى
+col_spacer1, col_logo, col_spacer2 = st.columns([2, 1, 2])
+with col_logo:
     logo_path = "logo.png"
     if os.path.exists(logo_path):
-        st.image(logo_path, width=120)
+        st.image(logo_path, width=130)
     else:
         found = False
         for file in os.listdir("."):
             if file.lower().startswith("logo") and file.lower().endswith(
                 (".png", ".jpg", ".jpeg")
             ):
-                st.image(file, width=120)
+                st.image(file, width=130)
                 found = True
                 break
         if not found:
             st.image(
                 "https://cdn-icons-png.flaticon.com/512/3135/3135755.png",
-                width=100,
+                width=110,
             )
 
-with col2:
-    st.markdown(
-        """
-        <div class="header-box">
-            <h2>🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
-            <h4>الاستعلام عن تجديد الشهادة</h4>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+# صندوق العنوان والبرامج التدريبية في المنتصف
+st.markdown(
+    """
+    <div class="header-box">
+        <h2>🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
+        <h4>الاستعلام عن تجديد شهادة القيادة والإشراف</h4>
+        <p><b>البرامج التدريبية المشمولة:</b> مدير ووكيل إدارة تعليمية &nbsp;|&nbsp; مدير ووكيل إدارة مدرسية &nbsp;|&nbsp; أساسيات التوجيه الفني</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.markdown("---")
 
