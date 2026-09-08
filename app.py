@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import streamlit as st
 
@@ -61,7 +62,7 @@ st.markdown(
         text-align: right;
         direction: rtl;
     }
-    /* تنسيق صناديق الحالات المخصصة (أصبحت في المنتصف) */
+    /* تنسيق صناديق الحالات المخصصة (في المنتصف) */
     .status-red {
         background-color: #ffebee;
         color: #c62828;
@@ -103,16 +104,29 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# رأس الصفحة مع الشعار والعنوان
+# رأس الصفحة مع فحص وجود الشعار بدقة
 col1, col2 = st.columns([1, 4])
 
 with col1:
-    try:
-        st.image("logo.png", width=120)
-    except:
-        st.image(
-            "https://cdn-icons-png.flaticon.com/512/3135/3135755.png", width=100
-        )
+    logo_path = "logo.png"
+    if os.path.exists(logo_path):
+        st.image(logo_path, width=120)
+    else:
+        # البحث عن أي ملف صورة آخر شبيه في حال كان الاسم مختلفاً قليلاً
+        found = False
+        for file in os.listdir("."):
+            if file.lower().startswith("logo") and file.lower().endswith(
+                (".png", ".jpg", ".jpeg")
+            ):
+                st.image(file, width=120)
+                found = True
+                break
+        if not found:
+            # عرض أيقونة افتراضية هادئة إذا لم يوجد الشعار نهائياً لكي لا يظهر خطأ
+            st.image(
+                "https://cdn-icons-png.flaticon.com/512/3135/3135755.png",
+                width=100,
+            )
 
 with col2:
     st.markdown(
@@ -171,7 +185,7 @@ try:
             result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
-                st.success("🎉تم العثور علي بيانات المعلم:")
+                st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
