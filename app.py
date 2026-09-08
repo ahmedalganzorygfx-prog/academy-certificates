@@ -316,7 +316,7 @@ try:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #8b949e;">يرجى التوجه لمقر الفرع لاستلامها مع احضار صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
