@@ -49,6 +49,11 @@ st.markdown(
         font-size: 14px;
         margin: 0;
     }
+    /* تنسيق اللون الأصفر للبرامج التدريبية */
+    .programs-text {
+        color: #ffcc00 !important;
+        font-weight: bold;
+    }
     .stAlert {
         direction: rtl;
         text-align: right;
@@ -188,13 +193,13 @@ with col_logo:
                 width=110,
             )
 
-# صندوق العنوان والبرامج التدريبية في المنتصف
+# صندوق العنوان والبرامج التدريبية باللون الأصفر
 st.markdown(
     """
     <div class="header-box">
         <h2>🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</h2>
         <h4>الاستعلام عن تجديد شهادة القيادة والإشراف</h4>
-        <p><b>البرامج التدريبية :</b> مدير ووكيل إدارة تعليمية &nbsp;|&nbsp; مدير ووكيل إدارة مدرسية &nbsp;|&nbsp; أساسيات التوجيه الفني</p>
+        <p><b>البرامج التدريبية المشمولة:</b> <span class="programs-text">مدير ووكيل إدارة تعليمية &nbsp;|&nbsp; مدير ووكيل إدارة مدرسية &nbsp;|&nbsp; أساسيات التوجيه الفني</span></p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -208,7 +213,6 @@ st.markdown("---")
 def load_data(file_path):
     if not os.path.exists(file_path):
         return None
-    # قراءة كافة الأعمدة كنصوص لمنع تحويل الأرقام القومية لأرقام عشرية
     df = pd.read_excel(file_path, dtype=str)
     df.columns = df.columns.astype(str).str.strip()
     return df
@@ -256,7 +260,6 @@ if df is not None:
             )
             result = df[df[id_column] == search_query]
 
-            # في حال لم يجد بـ (==) يمكن التجريد بالـ contains للبحث الجزئي
             if result.empty:
                 result = df[df[id_column].str.contains(search_query, na=False)]
 
