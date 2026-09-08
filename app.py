@@ -1,23 +1,19 @@
 import pandas as pd
 import streamlit as st
 
-# إعداد الصفحة لتكون عريضة
+# إعداد الصفحة لتكون عريضة ودعم اللغة العربية من اليمين لليسار (RTL)
 st.set_page_config(
     page_title="الاستعلام عن تجديد الشهادة - فرع الجيزة", layout="wide"
 )
 
-# تخصيص التصميم ودعم اللغة العربية من اليمين لليسار (RTL)
 st.markdown(
     """
     <style>
-    /* توجيه كافة العناصر من اليمين لليسار */
     html, body, [class*="css"] {
         direction: rtl;
         text-align: right;
         font-family: 'Cairo', sans-serif, Arial;
     }
-    
-    /* تنسيق صندوق العنوان الرئيسي */
     .header-box {
         background-color: #1b5e20;
         padding: 20px;
@@ -26,8 +22,6 @@ st.markdown(
         text-align: center;
         margin-bottom: 25px;
     }
-    
-    /* تنسيق الجداول والبيانات لتكون من اليمين لليسار */
     table {
         direction: rtl;
         text-align: right !important;
@@ -35,8 +29,6 @@ st.markdown(
     th, td {
         text-align: right !important;
     }
-    
-    /* تنسيق صناديق النجاح والتحذير */
     .stAlert {
         direction: rtl;
         text-align: right;
@@ -46,12 +38,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# رأس الصفحة (يمكنك وضع رابط اللوجو الخاص بك مكان رابط الصورة أدناه)
+# رأس الصفحة مع الشعار والعنوان
 col1, col2 = st.columns([1, 4])
 
 with col1:
-    # ضع رابط الشعار (Logo) الخاص بالفرع هنا، أو اترك مسار الصورة المحلية
-    # مثال لرابط شعار افتراضي أو يمكنك رفع الشعار بجانب الكود وتسميته logo.png
     try:
         st.image("logo.png", width=120)
     except:
@@ -72,54 +62,45 @@ with col2:
 
 st.markdown("---")
 
-# رفع ملف إكسيل الشهادات
-uploaded_file = st.file_uploader(
-    "📁 برجاء رفع ملف كشف الشهادات (Excel)", type=["xlsx", "xls"]
-)
+# قراءة ملف الإكسيل الثابت تلقائياً من المجلد (الملف الذي ترفعيه أنتِ كأدمن)
+excel_file = "certificates.xlsx"
 
-if uploaded_file is not None:
-    try:
-        df = pd.read_excel(uploaded_file)
+try:
+    df = pd.read_excel(excel_file)
 
-        # تنظيف أسماء الأعمدة لإزالة المسافات الزائدة
-        df.columns = df.columns.astype(str).str.strip()
+    # تنظيف أسماء الأعمدة لإزالة المسافات الزائدة
+    df.columns = df.columns.astype(str).str.strip()
 
-        # البحث عن عمود الرقم القومي تلقائياً
-        id_column = None
-        for col in df.columns:
-            if "قومي" in col or "الرقم" in col or "ID" in col:
-                id_column = col
-                break
+    # البحث عن عمود الرقم القومي تلقائياً
+    id_column = None
+    for col in df.columns:
+        if "قومي" in col or "الرقم" in col or "ID" in col:
+            id_column = col
+            break
 
-        if id_column is None:
-            id_column = df.columns[
-                0
-            ]  # افتراض أن العمود الأول هو الرقم القومي إذا لم يتم العثور عليه
+    if id_column is None:
+        id_column = df.columns[0]
 
-        st.success("تم رفع الملف بنجاح! يمكنك الآن الاستعلام.")
-
-        # صندوق إدخال الرقم القومي
-        search_query = st.text_input(
-            "أدخل الرقم القومي (14 رقماً):", max_chars=14
-        )
-
-        if search_query:
-            # تحويل القيم إلى نص للبحث السليم
-            df[id_column] = df[id_column].astype(str).str.strip()
-            result = df[df[id_column].str.contains(search_query, na=False)]
-
-            if not result.empty:
-                st.success("🎉 تم العثور على البيانات بنجاح:")
-                # عرض النتائج في جدول منسق ومن اليمين لليسار
-                st.dataframe(result, use_container_width=True)
-            else:
-                st.error(
-                    "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
-                )
-
-    except Exception as e:
-        st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
-else:
+    # صندوق إدخال الرقم القومي للمعلم
     st.info(
-        "💡 برجاء رفع ملف الإكسيل الخاص بالشهادات لتبدأ عملية الاستعلام للأعضاء."
+        "💡 أدخل الرقم القومي الخاص بك (14 رقماً) للاستعلام عن موقف تجديد الشهادة."
+    )
+    search_query = st.text_input("الرقم القومي:", max_chars=14)
+
+    if search_query:
+        # تحويل القيم إلى نص للبحث السليم
+        df[id_column] = df[id_column].astype(str).str.strip()
+        result = df[df[id_column].str.contains(search_query, na=False)]
+
+        if not result.empty:
+            st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
+            st.dataframe(result, use_container_width=True)
+        else:
+            st.error(
+                "❌ عذراً، لم يتم العثور على بيانات بهذا الرقم القومي. تأكد من صحة الرقم المُدخل."
+            )
+
+except Exception as e:
+    st.warning(
+        "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع."
     )
