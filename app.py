@@ -181,8 +181,22 @@ st.markdown(
         overflow: hidden;
         border: 1px solid #30363d;
         box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        margin-top: 15px;
+        margin-top: 12px;
         margin-bottom: 20px;
+    }
+    .map-btn {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 8px 16px;
+        background-color: #238636;
+        color: white !important;
+        font-weight: bold;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+    .map-btn:hover {
+        background-color: #2ea043;
     }
     </style>
 """,
@@ -366,16 +380,19 @@ else:
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
 
-# تذييل الصفحة مع الخريطة المثبت عليها Pin أحمر صريح لموقع الفرع
+# تذييل الصفحة مع الخريطة المثبتة بـ Pin ورابط العرض المباشر في تطبيق جوجل ماب
 st.markdown(
     """
     <div class="footer">
-        📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة (تاج الدول، إمبابة)
+        📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة (تاج الدول، إمبابة)<br>
+        <a href="https://maps.app.goo.gl/akdNyovrEbWLJmBu9" target="_blank" class="map-btn">
+            🗺️ فتح الموقع والتوجيه في تطبيق Google Maps
+        </a>
         <div class="map-container">
             <iframe 
                 src="https://maps.google.com/maps?q=30.06776,31.20915&hl=ar&z=17&output=embed" 
                 width="100%" 
-                height="420" 
+                height="400" 
                 style="border:0;" 
                 allowfullscreen="" 
                 loading="lazy" 
