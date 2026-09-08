@@ -366,16 +366,16 @@ else:
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
 
-# تذييل الصفحة المحدث بضم بطاقة جوجل ماب الكاملة (مكان + خريطة)
+# تذييل الصفحة مع الخريطة المثبت عليها Pin أحمر صريح لموقع الفرع
 st.markdown(
     """
     <div class="footer">
         📍 <b>مقر الفرع:</b> الأكاديمية المهنية للمعلمين - فرع الجيزة (تاج الدول، إمبابة)
         <div class="map-container">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3452.923419082215!2d31.20914857630718!3d30.067759874912242!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145841005f590059%3A0xa1ea142d1e2e4ff9!2z2KfZhNmD2KfYr9mK2YXZgdmK2Kkg2KfZhNmF2YfYp9mK2Kkg2YTZhNmF2LnZhNmF2YrZhiAtINmB2LHYuSDYp9mE2KzZitiy2Kk!5e0!3m2!1sar!2seg!4v1710000000000!5m2!1sar!2seg" 
+                src="https://maps.google.com/maps?q=30.06776,31.20915&hl=ar&z=17&output=embed" 
                 width="100%" 
-                height="400" 
+                height="420" 
                 style="border:0;" 
                 allowfullscreen="" 
                 loading="lazy" 
