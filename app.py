@@ -56,6 +56,11 @@ st.markdown(
         background-color: #30363d;
         border-color: #8b949e;
     }
+    /* جعل تسمية خانة الإدخال (الرقم القومي) باللون الأبيض */
+    .stTextInput label {
+        color: #ffffff !important;
+        font-weight: bold !important;
+    }
     /* تصميم خانة الإدخال لتتناغم مع التصميم الداكن */
     .stTextInput input {
         background-color: #161b22 !important;
@@ -136,6 +141,16 @@ st.markdown(
         border-top: 1px solid rgba(56, 139, 253, 0.2);
         border-bottom: 1px solid rgba(56, 139, 253, 0.2);
         border-left: 1px solid rgba(56, 139, 253, 0.2);
+    }
+    /* تنسيق تذييل الصفحة (Footer) */
+    .footer {
+        margin-top: 50px;
+        padding: 20px;
+        text-align: center;
+        border-top: 1px solid #30363d;
+        color: #8b949e;
+        font-size: 14px;
+        direction: rtl;
     }
     </style>
 """,
@@ -325,3 +340,13 @@ except Exception as e:
     st.warning(
         "⚠️ جاري تجهيز قاعدة البيانات أو أن ملف الكشف غير متوفر حالياً. برجاء التأكد من رفع ملف (certificates.xlsx) في مجلد المشروع على GitHub."
     )
+
+# تذييل الصفحة (Footer)
+st.markdown(
+    """
+    <div class="footer">
+        تصميم وتنفيذ <b>أحمد الجنزوري</b> - مدير الفرع
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
