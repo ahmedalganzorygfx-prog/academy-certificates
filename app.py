@@ -61,7 +61,7 @@ st.markdown(
         text-align: right;
         direction: rtl;
     }
-    /* تنسيق صناديق الحالات المخصصة */
+    /* تنسيق صناديق الحالات المخصصة (أصبحت في المنتصف) */
     .status-red {
         background-color: #ffebee;
         color: #c62828;
@@ -71,7 +71,7 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
-        text-align: right;
+        text-align: center;
         direction: rtl;
     }
     .status-green {
@@ -83,7 +83,7 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
-        text-align: right;
+        text-align: center;
         direction: rtl;
     }
     .status-blue {
@@ -95,7 +95,7 @@ st.markdown(
         margin-top: 15px;
         font-size: 16px;
         font-weight: bold;
-        text-align: right;
+        text-align: center;
         direction: rtl;
     }
     </style>
@@ -171,7 +171,7 @@ try:
             result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
-                st.success("🎉 تم العثور على بيانات المعلم:")
+                st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
@@ -226,7 +226,7 @@ try:
                     """
                     st.markdown(card_code, unsafe_allow_html=True)
 
-                    # عرض صندوق الحالة بشكل منفصل ومستقل ومحاذاة لليمين
+                    # عرض صندوق الحالة في المنتصف
                     if status_column:
                         status_val = str(row[status_column]).strip()
                         if "لم تصل" in status_val:
@@ -234,7 +234,7 @@ try:
                                 """
                                 <div class="status-red">
                                     🔴 لم تصل إلى الفرع حتى الآن<br>
-                                    <span style="font-weight: normal; font-size: 18px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
@@ -244,7 +244,7 @@ try:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 18px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
