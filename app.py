@@ -40,6 +40,37 @@ st.markdown(
         border-radius: 5px;
         font-weight: bold;
     }
+    /* تنسيق صناديق الحالات المخصصة */
+    .status-red {
+        background-color: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 8px;
+        border-right: 5px solid #c62828;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .status-green {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        padding: 15px;
+        border-radius: 8px;
+        border-right: 5px solid #2e7d32;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .status-blue {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        padding: 15px;
+        border-radius: 8px;
+        border-right: 5px solid #1565c0;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -88,6 +119,13 @@ try:
     if id_column is None:
         id_column = df.columns[0]
 
+    # البحث عن عمود حالة الشهادة تلقائياً
+    status_column = None
+    for col in df.columns:
+        if "حالة" in col or "الشهادة" in col:
+            status_column = col
+            break
+
     # النص الإرشادي موجه ناحية اليمين
     st.markdown(
         '<div style="text-align: right; direction: rtl; font-size: 18px; font-weight: bold; margin-bottom: 10px;">💡 أدخل الرقم القومي الخاص بك (14 رقماً) ثم اضغط على زر بحث:</div>',
@@ -108,7 +146,42 @@ try:
             if not result.empty:
                 st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
 
-                # ترتيب الأعمدة لجعلها تبدأ من اليمين لليسار تماماً
+                # عرض الرسالة المطابقة للحالة الواردة في الإكسيل
+                if status_column:
+                    for idx, row in result.iterrows():
+                        status_val = str(row[status_column]).strip()
+
+                        if "لم تصل" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-red">
+                                    🔴 لم تصل إلى الفرع حتى الآن<br>
+                                    <span style="font-weight: normal; font-size: 15px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        elif "موجودة" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-green">
+                                    🟢 موجودة بالفرع<br>
+                                    <span style="font-weight: normal; font-size: 15px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+                        elif "تسليم" in status_val:
+                            st.markdown(
+                                """
+                                <div class="status-blue">
+                                    🔵 تم تسليم الشهادة للمعلم
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
+
+                # ترتيب الأعمدة من اليمين لليسار
                 cols = list(result.columns)
                 priority_cols = []
 
@@ -120,7 +193,6 @@ try:
                 remaining_cols = [c for c in cols if c not in priority_cols]
                 final_order = priority_cols + remaining_cols
 
-                # عكس ترتيب الأعمدة ([::-1]) لكي تظهر العناصر الأولى أقصى اليمين في الجدول
                 st.dataframe(
                     result[final_order[::-1]],
                     use_container_width=True,
