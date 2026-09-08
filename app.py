@@ -234,7 +234,7 @@ try:
                                 """
                                 <div class="status-red">
                                     🔴 لم تصل إلى الفرع حتى الآن<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
+                                    <span style="font-weight: normal; font-size: 18px; color: #333;">يرجى الاستعلام في وقت لاحق.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
@@ -244,7 +244,7 @@ try:
                                 """
                                 <div class="status-green">
                                     🟢 موجودة بالفرع<br>
-                                    <span style="font-weight: normal; font-size: 14px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
+                                    <span style="font-weight: normal; font-size: 18px; color: #333;">يرجى التوجه لمقر الفرع لاستلامها وبحوزتكم صحيفة أحوال الكترونية حديثة معتمدة + صورة البطاقة.</span>
                                 </div>
                                 """,
                                 unsafe_allow_html=True,
