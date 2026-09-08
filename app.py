@@ -171,7 +171,7 @@ try:
             result = df[df[id_column].str.contains(search_query, na=False)]
 
             if not result.empty:
-                st.success("🎉 تم العثور على بيانات الشهادة بنجاح:")
+                st.success("🎉 تم العثور على بيانات المعلم:")
 
                 # عرض النتائج في شكل بطاقات أنيقة
                 for idx, row in result.iterrows():
